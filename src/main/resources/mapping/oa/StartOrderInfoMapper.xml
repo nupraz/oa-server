@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.graduation.oa.dao.StartOrderInfoDao">
+	<select id="selectNowOrder" resultType="com.graduation.oa.data.empOrderEntity.StartOrderInfo" parameterType="com.graduation.oa.data.empOrderEntity.RestaurantInfo">
+
+		SELECT * from start_order_info where rest_id=#{restId} and #{now} BETWEEN start_date and end_date;
+
+	</select>
+	<select id="selectIsHaveOrder" resultType="com.graduation.oa.data.empOrderEntity.StartOrderInfo" parameterType="java.util.Date">
+
+		SELECT * from start_order_info where #{now} BETWEEN start_date and end_date;
+
+	</select>
+	<select id="selectRestAndMenuInfoIsHaveOrder" resultType="com.graduation.oa.data.empOrderEntity.StartOrderInfo" parameterType="java.util.Date">
+		SELECT
+		s.rest_id,
+		s.menu_id,
+		r.rest_name,
+		m.menu_name,
+		m.menu_price
+		FROM
+		start_order_info s
+		LEFT JOIN restaurant_info r ON s.rest_id = r.rest_id
+		LEFT JOIN rest_menu_info m ON s.menu_id = m.menu_id
+		WHERE #{now} BETWEEN s.start_date and s.end_date;
+	</select>
+	<select id="selectAllMenuInfo" resultType="com.graduation.oa.data.empOrderEntity.StartOrderInfo" parameterType="java.lang.String">
+		SELECT
+		m.rest_id,
+		m.menu_id,
+		r.rest_name,
+		m.menu_name,
+		m.menu_price
+		FROM
+		rest_menu_info m
+		LEFT JOIN restaurant_info r ON m.rest_id = r.rest_id
+		WHERE m.in_use = 'Y' AND r.in_use = 'Y'
+	</select>
+
+</mapper>

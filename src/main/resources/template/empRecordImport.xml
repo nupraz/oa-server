@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workbook>
+    <worksheet idx="0">
+        <section startRow="0" endRow="0"></section>
+        <loop startRow="1" endRow="1" items="recordList" var="empAssessRecord" varType="com.graduation.oa.data.EmpAssessRecord">
+            <section startRow="1" endRow="1">
+                <mapping row="1" col="0">empAssessRecord.assessMonth</mapping>
+                <mapping row="1" col="1">empAssessRecord.deptName</mapping>
+                <mapping row="1" col="2">empAssessRecord.jurName</mapping>
+                <mapping row="1" col="3">empAssessRecord.empName</mapping>
+                <mapping row="1" col="4">empAssessRecord.tmpEmpScore</mapping>
+                <mapping row="1" col="5">empAssessRecord.assessRemark</mapping>
+                <mapping row="1" col="6">empAssessRecord.recordTime</mapping>
+            </section>
+            <loopbreakcondition>
+                <rowcheck offset="0">
+                    <cellcheck offset="0"></cellcheck>
+                    <cellcheck offset="1"></cellcheck>
+                    <cellcheck offset="2"></cellcheck>
+                    <cellcheck offset="3"></cellcheck>
+                    <cellcheck offset="4"></cellcheck>
+                    <cellcheck offset="5"></cellcheck>
+                    <cellcheck offset="6"></cellcheck>
+                </rowcheck>
+            </loopbreakcondition>
+        </loop>
+    </worksheet>
+</workbook>

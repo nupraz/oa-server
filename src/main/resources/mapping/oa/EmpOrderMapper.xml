@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "com.graduation.oa.dao.EmpOrderDao">
+
+	<select id="fetchEmpOrders" parameterType="java.lang.String" resultType="com.graduation.oa.data.empOrderEntity.EmpOrderInfo">
+        SELECT
+            OD.emp_id AS empId,
+            EM.emp_name AS empName,
+            OD.menu_id AS menuId,
+            MN.menu_name AS menuName,
+			OD.rest_id AS restId,
+			RI.rest_name AS restName,
+            OD.price AS price,
+            OD.manage_user AS manageUser,
+			OD.order_time AS orderTime,
+			OD.manage_time AS manageTime,
+            OD.remark AS remark,
+            OD.sys_guid AS sysGuid,
+			CASE
+				WHEN order_time BETWEEN (
+					SELECT
+						MAX(
+							DATE_FORMAT(
+							start_date,
+							'%Y-%m-%d %H:%i:%s'
+							)
+						)
+					FROM
+						start_order_info
+					WHERE
+						CONVERT_TZ(NOW(), @@session.time_zone,'+8:00') BETWEEN start_date AND end_date
+				)
+				AND (
+					SELECT
+						MAX(
+							DATE_FORMAT(
+							end_date,
+							'%Y-%m-%d %H:%i:%s'
+							)
+						)
+					FROM
+						start_order_info
+					WHERE
+						CONVERT_TZ(NOW(), @@session.time_zone,'+8:00') BETWEEN start_date AND end_date
+				) THEN
+				'0'
+				ELSE
+				'1'
+			END historyFlag
+        FROM
+            emp_order_info OD
+        LEFT JOIN rest_menu_info MN ON OD.menu_id = MN.menu_id
+        LEFT JOIN emp_info EM ON OD.emp_id = EM.emp_id
+		LEFT JOIN restaurant_info RI ON OD.rest_id = RI.rest_id
+        <where>
+		<if test="roles!=null and roles.size>0">
+			<foreach collection="roles" item="roleItem">
+				<choose>
+					<when test="roleItem==0">
+						OD.sys_guid is not null
+					</when >
+					<otherwise>
+						<choose>
+							<when test="empId != null and empId != ''">
+								AND OD.emp_id = #{empId}
+							</when>
+							<otherwise>
+								AND 1=2
+							</otherwise>
+						</choose>
+					</otherwise>
+				</choose>
+			</foreach>
+		</if>
+		<if test="fuzzy != null">
+			AND (
+			 EM.emp_name LIKE concat(concat('%',#{fuzzy}),'%')
+			OR OD.emp_id LIKE concat(concat('%',#{fuzzy}),'%')
+			OR OD.rest_id LIKE concat(concat('%',#{fuzzy}),'%')
+			OR RI.rest_name LIKE concat(concat('%',#{fuzzy}),'%')
+			OR OD.menu_id LIKE concat(concat('%',#{fuzzy}),'%')
+			OR MN.menu_name LIKE concat(concat('%',#{fuzzy}),'%')
+			OR OD.price LIKE concat(concat('%',#{fuzzy}),'%')
+			OR OD.order_time LIKE concat(concat('%',#{fuzzy}),'%')
+			)
+		</if>
+		<if test="fuzzy == null">
+			<if test="empName != null and empName != ''">
+				AND (EM.emp_name like concat(concat('%',#{empName}),'%')
+					OR OD.emp_id like concat(concat('%',#{empName}),'%'))
+			</if>
+			<if test="startDate != null and startDate != ''">
+				AND DATE(OD.order_time) >= DATE(#{startDate})
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND DATE(#{endDate}) >= DATE(OD.order_time)
+			</if>
+		</if>
+		<if test="fuzzy == null and (startDate == null or startDate=='') and (endDate == null or endDate == '')">
+			AND DATE(OD.order_time) =  DATE(NOW())
+		</if>
+		</where>
+		<if test="sort != '' and column != ''">
+			ORDER BY
+			<if test="column == 'empId'"> OD.emp_id </if>
+			<if test="column == 'empName'"> EM.emp_name </if>
+			<if test="column == 'price'"> OD.price </if>
+			<if test="column == 'orderTime'"> OD.order_time </if>
+
+		</if>
+		<if test=" sort == 'ascending' and column != ''">
+			ASC
+		</if>
+		<if test=" sort == 'descending' and column != ''">
+			DESC
+		</if>
+	</select>
+	<select id="fetchEmpOrdersStatistics" parameterType="java.lang.String" resultType="com.bestvike.oa.data.empOrderEntity.EmpOrderInfo">
+		SELECT
+            SS.orderDate orderDate,
+            RI.rest_name restName,
+            MN.menu_name menuName,
+            SS.totalMenu totalMenu,
+            MN.menu_price price,
+            SS.priceSum priceSum
+        FROM
+            (
+                SELECT
+                    DATE(OD.order_time) orderDate,
+                    OD.rest_id restId,
+                    OD.menu_id menuId,
+                    COUNT(OD.menu_id) totalMenu,
+                    SUM(OD.price) priceSum
+                FROM
+                (
+                    SELECT
+                    OD.*, MN.menu_name,
+					RI.rest_name,
+                    EM.emp_name
+                    FROM
+                    emp_order_info OD
+					LEFT JOIN restaurant_info RI ON OD.rest_id = RI.rest_id
+                    LEFT JOIN rest_menu_info MN ON OD.menu_id = MN.menu_id
+                    LEFT JOIN emp_info EM ON OD.emp_id = EM.emp_id
+                ) OD
+                WHERE OD.sys_guid IS NOT NULL
+                <if test="fuzzy != null">
+                    AND (
+                    OD.emp_name LIKE concat(concat('%',#{fuzzy}),'%')
+                    OR OD.emp_id LIKE concat(concat('%',#{fuzzy}),'%')
+                    OR OD.rest_id LIKE concat(concat('%',#{fuzzy}),'%')
+                    OR OD.rest_name LIKE concat(concat('%',#{fuzzy}),'%')
+                    OR OD.menu_id LIKE concat(concat('%',#{fuzzy}),'%')
+                    OR OD.menu_name LIKE concat(concat('%',#{fuzzy}),'%')
+                    OR OD.price LIKE concat(concat('%',#{fuzzy}),'%')
+                    OR OD.order_time LIKE concat(concat('%',#{fuzzy}),'%')
+                    )
+                </if>
+                <if test="fuzzy == null">
+                    <if test="empName != null and empName != ''">
+                        AND (OD.emp_name LIKE concat(concat('%',#{empName}),'%')
+                        OR OD.emp_id LIKE concat(concat('%',#{empName}),'%'))
+                    </if>
+                    <if test="startDate != null and startDate != ''">
+                        AND DATE(OD.order_time) >= DATE(#{startDate})
+                    </if>
+                    <if test="endDate != null and endDate != ''">
+                        AND DATE(#{endDate}) >= DATE(OD.order_time)
+                    </if>
+                </if>
+                <if test="fuzzy == null and (startDate == null or startDate=='') and (endDate == null or endDate == '')">
+                    AND DATE(OD.order_time) =  DATE(NOW())
+                </if>
+                GROUP BY
+                    DATE(OD.order_time),
+					OD.rest_id,
+                    OD.menu_id WITH ROLLUP
+            ) SS
+		LEFT JOIN restaurant_info RI ON SS.restId = RI.rest_id
+		LEFT JOIN rest_menu_info MN ON SS.menuId = MN.menu_id
+	</select>
+	<select id="isAlreadyOrder" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT count(*) FROM emp_order_info eo WHERE eo.emp_id = #{empId} AND DATE_FORMAT(order_time,'%Y-%m-%d %H:%i:%s')
+		BETWEEN DATE_FORMAT(#{startOrderTime},'%Y-%m-%d %H:%i:%s') AND DATE_FORMAT(#{endOrderTime},'%Y-%m-%d %H:%i:%s') ;
+	</select>
+	<select id="isInOrderTime" parameterType="java.util.Date" resultType="java.lang.Integer">
+		SELECT count(*) FROM start_order_info so WHERE #{now} BETWEEN so.start_date and so.end_date;
+	</select>
+	<select id="selectStartAndEndOrdertime" parameterType="java.util.Date" resultType="com.bestvike.oa.data.empOrderEntity.EmpOrderInfo">
+		SELECT DISTINCT
+			start_date startOrderTime,
+			end_date endOrderTime
+		FROM
+			start_order_info
+		WHERE
+			DATE_FORMAT(
+				end_date,
+				'%Y-%m-%d %H:%i:%s'
+			) = (
+				SELECT
+					MAX(
+						DATE_FORMAT(
+							end_date,
+							'%Y-%m-%d %H:%i:%s'
+						)
+					)
+				FROM
+					start_order_info so
+				WHERE
+					#{now} BETWEEN so.start_date and so.end_date
+			)
+	</select>
+</mapper>
