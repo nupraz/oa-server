@@ -1,19 +1,19 @@
 package com.graduation.oa.service.impl;
 
-import com.bestvike.commons.utils.ExcelUtils;
-import com.bestvike.commons.utils.FileUtils;
-import com.bestvike.commons.utils.StringUtils;
+import com.graduation.oa.common.exception.ServiceException;
+import com.graduation.oa.common.util.EncryptUtil;
+import com.graduation.oa.common.util.ExcelUtils;
+import com.graduation.oa.common.util.FileUtils;
+import com.graduation.oa.common.util.StringUtils;
 import com.graduation.oa.dao.*;
 import com.graduation.oa.data.*;
-import com.graduation.oa.dao.*;
 import com.graduation.oa.service.BaseService;
 import com.graduation.oa.service.EmpInfoService;
-import com.graduation.oa.support.CacheUtils;
-import com.graduation.oa.support.ExcelUtil;
-import com.graduation.oa.support.MybatisUtils;
+import com.graduation.oa.common.support.CacheUtils;
+import com.graduation.oa.common.support.ExcelUtil;
+import com.graduation.oa.common.support.MybatisUtils;
 import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageInfo;
-import com.graduation.oa.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -44,11 +44,7 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
     @Autowired
     private DeptInfoDao deptInfoDao;
     @Autowired
-    private EmpAssessRecordDao empAssessRecordDao;
-    @Autowired
     private PostInfoDao postInfoDao;
-    @Autowired
-    private AssessReportInfoDao assessReportInfoDao;
 
     private static int total;
     @Value("${spring.servlet.multipart.max-file-size}")
@@ -72,6 +68,11 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
         return empInfoDao.selectByExample(example);
     }
 
+    @Override
+    public List<EmpInfo> fetchDeptEmp(EmpInfo empInfo, String userId) {
+        return null;
+    }
+
     /**
      * 新增用户时按照部门筛选员工,去除已开户员工和离职员工
      *
@@ -80,121 +81,7 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
      */
     @Override
     public List<EmpInfo> fetchEmpNotInUser(String deptId) {
-        /*Example example = new Example(EmpInfo.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("status", "0000");
-        if(deptId!=null && !"".equals(deptId)){
-            criteria.andEqualTo("deptId",deptId);
-        }
-        return empInfoDao.selectByExample(example);*/
         return empInfoDao.fetchEmpNotInUser(deptId);
-    }
-
-    @Override
-    public List<EmpInfo> fetchDeptEmp(EmpInfo empInfo, String userId) {
-        Example example = new Example(SysUser.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("empId", userId);
-        SysUser sysUser = sysUserDao.selectOneByExample(example);
-        empInfo.setDeptId(sysUser.getDeptId());
-        Example example2 = new Example(DeptInfo.class);
-        Example.Criteria criteria2 = example2.createCriteria();
-        criteria2.andEqualTo("id", sysUser.getDeptId());
-        DeptInfo deptInfo = deptInfoDao.selectOneByExample(example2);
-        if (null == deptInfo) {
-            logger.info("部门信息为空");
-        }
-        if ("0012".equals(sysUser.getRoles())) {
-            Example examples = new Example(EmpInfo.class);
-            examples.createCriteria().andEqualTo("deptId", sysUser.getDeptId()).andEqualTo("needScore", "1").andNotEqualTo("status", "9999");
-            List<EmpInfo> empInfos = empInfoDao.selectByExample(examples);
-            List<EmpInfo> collect = empInfos.stream().filter(item -> {
-                        Example exampleAss = new Example(EmpAssessRecord.class);
-                        exampleAss.createCriteria().andEqualTo("empId", item.getId()).andEqualTo("assessMonth", lastMonth());
-                        EmpAssessRecord empAssessRecord = empAssessRecordDao.selectOneByExample(exampleAss);
-                        if (!StringUtils.isEmpty(empAssessRecord)) {
-                            if ("00".equals(empAssessRecord.getStatus())) {
-
-                                return false;
-                            } else {
-                                item.setEmpScore(empAssessRecord.getEmpScore());
-                                item.setAssessRemark(empAssessRecord.getAssessRemark());
-                            }
-                        }
-
-                        PostInfo postInfo = postInfoDao.selectByPrimaryKey(item.getPostCode());
-                        if (null != postInfo) {
-                            List<String> list = Arrays.asList("处长", "三级职员", "协理员");
-                            if (!list.contains(postInfo.getName())) {
-                                item.setpostName(postInfo.getName());
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-            ).collect(Collectors.toList());
-            return collect;
-        }
-        List<EmpInfo> empInfos = empInfoDao.fetchDeptEmp(empInfo);
-        String state = "99";
-        Example example3 = new Example(EmpAssessRecord.class);
-        Example.Criteria criteria3 = example3.createCriteria();
-        criteria3.andEqualTo("deptId", deptInfo.getId()).andEqualTo("status", "00").andEqualTo("assessMonth", buildOuTTradeNo());
-        int count00 = empAssessRecordDao.selectCountByExample(example3);
-        if (count00 > 0) {
-            state = "66";
-        }
-        Example example4 = new Example(EmpAssessRecord.class);
-        Example.Criteria criteria4 = example4.createCriteria();
-        criteria4.andEqualTo("deptId", deptInfo.getId()).andEqualTo("status", "01").andEqualTo("assessMonth", buildOuTTradeNo());
-        int count01 = empAssessRecordDao.selectCountByExample(example4);
-        if (count01 > 0) {
-            state = "22";
-        }
-        Example example6 = new Example(AssessReportInfo.class);
-        example6.createCriteria().andEqualTo("assessMonth", buildOuTTradeNo());
-        int i = assessReportInfoDao.selectCountByExample(example6);
-        if (i == 0) {
-            state = "11";
-        }
-        String finalState = state;
-        empInfos = empInfos.stream().filter((EmpInfo e) -> {
-            e.setState(finalState);
-            Example examplePost = new Example(PostInfo.class);
-            Example.Criteria criteriaPost = examplePost.createCriteria();
-            criteriaPost.andEqualTo("code", e.getPostCode());
-            PostInfo postInfo = postInfoDao.selectOneByExample(examplePost);
-            e.setpostName(postInfo.getName());
-            List<String> list = Arrays.asList("处长", "三级职员", "协理员");
-            if (list.contains(e.getpostName())) {
-                return false;
-            }
-            /**
-             * 是否需要员工评价的状态
-             * 99 可以参与评价
-             * 66 已完成上月评价
-             * 11 部门评价尚未完成 不能进行员工评价
-             * 22 参与评价 且有暂存数据
-             */
-            //根据判断部门等级为1的部门---------当前数据中仅存在2级部门分别是0 和 1  下级部门为1时进行员工评价
-            if (null != deptInfo && null != deptInfo.getGrade() && deptInfo.getGrade() == 1) {
-                if (finalState.equals("66")) {
-                    return false;
-                }
-                if (finalState.equals("22")) {
-                    Example example5 = new Example(EmpAssessRecord.class);
-                    Example.Criteria criteria5 = example5.createCriteria();
-                    criteria5.andEqualTo("empId", e.getId()).andEqualTo("status", "01").andEqualTo("assessMonth", buildOuTTradeNo());
-                    EmpAssessRecord empAssessRecord = empAssessRecordDao.selectOneByExample(example5);
-                    e.setEmpScore(empAssessRecord.getEmpScore());
-                    e.setAssessRemark(empAssessRecord.getAssessRemark() == null ? "" : empAssessRecord.getAssessRemark());
-                }
-            } else {
-                return false;
-            }
-            return true;
-        }).collect(Collectors.toList());
-        return empInfos;
     }
 
     //获取上个年月yyyymm
@@ -204,28 +91,6 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
         DateTimeFormatter formatters = DateTimeFormatter.ofPattern("yyyyMM");
         return formatters.format(today);
     }
-    /*@Override
-    public PageInfo<EmpInfo> fetch(EmpInfo empInfo) {
-        return MybatisUtils.page(empInfo, empInfoDao, new ExampleCriteria() {
-            @Override
-            public void initCriteria(Example.Criteria criteria) {
-                if (!StringUtils.isEmpty(empInfo.getDeptId())) {
-                    criteria.andEqualTo("deptId", empInfo.getDeptId());
-                }
-              *//*  if (!StringUtils.isEmpty(empInfo.getFuzzy())) {
-                    criteria.andLike("id", "%" + empInfo.getFuzzy() + "%");
-                    criteria.orLike("name", "%" + empInfo.getFuzzy() + "%");
-                } else {*//*
-                if (!StringUtils.isEmpty(empInfo.getId())) {
-                    criteria.andEqualTo("id", empInfo.getId());
-                }
-                if (!StringUtils.isEmpty(empInfo.getName())) {
-                    criteria.andLike("name", "%" + empInfo.getName() + "%");
-                }
-//                }
-            }
-        });
-    }*/
 
     @Override
     public List<EmpInfo> fetch(EmpInfo empInfo) {
@@ -238,14 +103,26 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
         return pageInfo.getList();
     }
 
+    /**
+     * 新增员工信息
+     * @param empInfo
+     * @param user
+     * @return
+     */
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public int create(EmpInfo empInfo, String user) {
-        /*EmpInfo temp = empInfoDao.selectByPrimaryKey(empInfo.getId());
+        EmpInfo temp = empInfoDao.selectByPrimaryKey(empInfo.getEmpId());
+        try {
+            empInfo.setId(EncryptUtil.MD5Encode(empInfo.getEmpId() + empInfo.getEmpName()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (temp != null) {
             throw new ServiceException("该员工编号已存在");
-        }*/
-        empInfo.setId(getEmpId(empInfo));
+        }
+        empInfo.setEmpId(getEmpId(empInfo));
+
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
@@ -257,18 +134,23 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
         return empInfoDao.insert(empInfo);
     }
 
+    /**
+     * 修改员工信息
+     * @param empInfo
+     * @return
+     */
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public int modify(EmpInfo empInfo) {
         String empStatus = empInfo.getStatus();
         Example example = new Example(SysUser.class);
-        example.createCriteria().andEqualTo("empId", empInfo.getId()).andEqualTo("status", "0000");
+        example.createCriteria().andEqualTo("empId", empInfo.getEmpId()).andEqualTo("status", "0000");
         SysUser sysUser = sysUserDao.selectOneByExample(example);
         if (!StringUtils.isEmpty(sysUser)) {
             if (empStatus.equals("9999")) {
                 sysUser.setStatus("9999");
             }
-            sysUser.setName(empInfo.getName());
+            sysUser.setName(empInfo.getEmpName());
             sysUser.setDeptId(empInfo.getDeptId());
             sysUserDao.updateByPrimaryKey(sysUser);
         }
@@ -277,8 +159,7 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
     }
 
     /**
-     * 删除员工
-     *
+     * 删除员工信息
      * @param ids
      */
     @Override
@@ -306,8 +187,7 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
     }
 
     /**
-     * 员工编号生成辅助方法
-     *
+     * 生成员工编号
      * @param empInfo
      * @return
      */
@@ -328,7 +208,6 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
 
     /**
      * 员工导入功能
-     *
      * @param file
      * @param fileSource
      * @param path
@@ -466,7 +345,6 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
 
     /**
      * 员工信息导入验证
-     *
      * @param list
      * @param user
      * @return
@@ -484,7 +362,7 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
             if (deptId != null && !"".equals(deptId)) {
                 empInfo.setDeptId(deptId);
                 String id = getEmpId(empInfo);
-                empInfo.setId(id);
+                empInfo.setEmpId(id);
             } else {
                 msgbuf = getErrorMsg(msgbuf, index, "部门名称不存在 ");
             }
@@ -502,7 +380,7 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
             if (grade == false) {
                 msgbuf = getErrorMsg(msgbuf, index, "员工级别名称不存在 ");
             }
-            /*if(empInfo.getGrade().equals("主任")){
+            if(empInfo.getGrade().equals("主任")){
                 empInfo.setGrade("0");
             } else if(empInfo.getGrade().equals("副主任") ){
                 empInfo.setGrade("1");
@@ -514,10 +392,10 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
                 empInfo.setGrade("4");
             } else {
                 msgbuf = getErrorMsg(msgbuf,index,"员工级别名称不存在 ");
-            }*/
+            }
             // 验证岗级名称
             Example example = new Example(PostInfo.class);
-            example.createCriteria().andEqualTo("name", empInfo.getpostName());
+            example.createCriteria().andEqualTo("name", empInfo.getPostName());
             PostInfo postInfo = postInfoDao.selectOneByExample(example);
             if (!StringUtils.isEmpty(postInfo)) {
                 empInfo.setPostCode(postInfo.getCode());
@@ -538,7 +416,7 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
             if (status == false) {
                 msgbuf = getErrorMsg(msgbuf, index, "员工状态不存在 ");
             }
-            /*if(empInfo.getStatus().equals("正常") ){
+            if(empInfo.getStatus().equals("正常") ){
                 empInfo.setStatus("0000");
             } else if(empInfo.getStatus().equals("调走") ){
                 empInfo.setStatus("1000");
@@ -548,7 +426,7 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
                 empInfo.setStatus("9999");
             } else{
                 msgbuf = getErrorMsg(msgbuf,index,"员工状态错误，请选择 正常、调走、休假、离职 状态 ");
-            }*/
+            }
             // 验证是否参与评分
             if (empInfo.getNeedScore().equals("是")) {
                 empInfo.setNeedScore("1");
@@ -580,7 +458,6 @@ public class EmpInfoServiceImpl extends BaseService implements EmpInfoService {
 
     /**
      * 返回错误行信息
-     *
      * @param str
      * @param index
      * @param msgStr

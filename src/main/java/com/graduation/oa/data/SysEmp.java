@@ -1,6 +1,6 @@
 package com.graduation.oa.data;
 
-import com.graduation.oa.support.CacheUtils;
+import com.graduation.oa.common.support.CacheUtils;
 import com.github.pagehelper.util.StringUtil;
 
 import javax.persistence.Entity;

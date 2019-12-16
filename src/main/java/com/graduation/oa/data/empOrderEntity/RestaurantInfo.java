@@ -1,6 +1,6 @@
 package com.graduation.oa.data.empOrderEntity;
 
-import com.graduation.oa.support.CacheUtils;
+import com.graduation.oa.common.support.CacheUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Entity;

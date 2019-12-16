@@ -1,6 +1,6 @@
 package com.graduation.oa.data;
 
-import com.bestvike.commons.entity.Route;
+import com.graduation.oa.common.entity.Route;
 import com.bestvike.commons.utils.ConvertUtils;
 import com.bestvike.commons.utils.StringUtils;
 

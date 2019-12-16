@@ -115,7 +115,7 @@
 			DESC
 		</if>
 	</select>
-	<select id="fetchEmpOrdersStatistics" parameterType="java.lang.String" resultType="com.bestvike.oa.data.empOrderEntity.EmpOrderInfo">
+	<select id="fetchEmpOrdersStatistics" parameterType="java.lang.String" resultType="com.graduation.oa.data.empOrderEntity.EmpOrderInfo">
 		SELECT
             SS.orderDate orderDate,
             RI.rest_name restName,
@@ -186,7 +186,7 @@
 	<select id="isInOrderTime" parameterType="java.util.Date" resultType="java.lang.Integer">
 		SELECT count(*) FROM start_order_info so WHERE #{now} BETWEEN so.start_date and so.end_date;
 	</select>
-	<select id="selectStartAndEndOrdertime" parameterType="java.util.Date" resultType="com.bestvike.oa.data.empOrderEntity.EmpOrderInfo">
+	<select id="selectStartAndEndOrdertime" parameterType="java.util.Date" resultType="com.graduation.oa.data.empOrderEntity.EmpOrderInfo">
 		SELECT DISTINCT
 			start_date startOrderTime,
 			end_date endOrderTime

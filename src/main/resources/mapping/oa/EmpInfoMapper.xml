@@ -12,8 +12,6 @@
 			<if test="fuzzy != null and fuzzy !=''">
 				and e.name like concat(concat('%',#{fuzzy}),'%')
 			</if>
-			<!--<if test="fuzzy == null or fuzzy ==''">
-			</if>-->
 			<if test="deptId != null and deptId != ''">
 				and e.dept_id = #{deptId}
 			</if>
@@ -21,29 +19,24 @@
 	</select>
 	<select id="fetchDeptEmp" resultType="com.graduation.oa.data.EmpInfo" parameterType="com.graduation.oa.data.EmpInfo">
 		<![CDATA[
-			SELECT id,name,dept_id,post_code from emp_info where dept_id=#{deptId} and need_score='1'
+			SELECT emp_id,emp_name,dept_id,post_code from emp_info where dept_id=#{deptId} and need_score='1'
 		]]>
 	</select>
 	<select id="fetchEmpIdMax" resultType="java.lang.String" parameterType="com.graduation.oa.data.EmpInfo">
 		<![CDATA[
-			select MAX(id) from emp_info e where e.id like concat(#{deptId},'%')
+			select MAX(emp_id) from emp_info e where e.emp_id like concat(#{deptId},'%')
 		]]>
 	</select>
 	<select id="fetchEmpNotInUser" resultType="com.graduation.oa.data.EmpInfo" parameterType="java.lang.String">
 		<if test="deptId != null and deptId != ''">
 		<![CDATA[
-			select e.* from emp_info e where e.status <> 9999 and e.dept_id = #{deptId} and e.id not in (select e.id from emp_info e,sys_user u where e.id = u.emp_id and u.status = 0000)
+			select e.* from emp_info e where e.status <> 9999 and e.dept_id = #{deptId} and e.emp_id not in (select e.emp_id from emp_info e,sys_user u where e.emp_id = u.emp_id and u.status = 0000)
 		]]>
 		</if>
 		<if test="deptId == null or deptId == ''">
 		<![CDATA[
-			select e.* from emp_info e where e.status <> 9999 and e.id not in (select e.id from emp_info e,sys_user u where e.id = u.emp_id and u.status = 0000)
+			select e.* from emp_info e where e.status <> 9999 and e.emp_id not in (select e.emp_id from emp_info e,sys_user u where e.emp_id = u.emp_id and u.status = 0000)
 		]]>
 		</if>
-	</select>
-	<select id="fetchEmpThreeLevel" resultType="com.graduation.oa.data.EmpInfo" parameterType="com.graduation.oa.data.EmpInfo">
-		<![CDATA[
-			SELECT e.* from emp_info e,post_info p WHERE e.post_code = p.code and p.name like '%三级%'
-		]]>
 	</select>
 </mapper>

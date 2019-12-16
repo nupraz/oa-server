@@ -1,6 +1,6 @@
 package com.graduation.oa.service.impl;
 
-import com.graduation.oa.util.StringUtils;
+import com.graduation.oa.common.util.StringUtils;
 import com.graduation.oa.dao.RestMenuInfoDao;
 import com.graduation.oa.dao.RestaurantInfoDao;
 import com.graduation.oa.dao.StartOrderInfoDao;

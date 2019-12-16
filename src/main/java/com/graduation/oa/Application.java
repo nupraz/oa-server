@@ -1,6 +1,6 @@
 package com.graduation.oa;
 
-import com.bestvike.commons.redis.Cache;
+import com.graduation.oa.common.redis.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;

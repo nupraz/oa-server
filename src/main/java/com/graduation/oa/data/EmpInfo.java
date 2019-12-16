@@ -1,7 +1,7 @@
 package com.graduation.oa.data;
 
 import com.bestvike.commons.utils.StringUtils;
-import com.graduation.oa.support.CacheUtils;
+import com.graduation.oa.common.support.CacheUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -16,7 +16,11 @@ public class EmpInfo extends BasePageData implements Serializable {
 
     @Id
     private String id;
-    private String name;
+
+
+
+    private String empId;
+    private String EmpName;
     private String deptId;
     private String grade;
     private String postCode;
@@ -45,32 +49,6 @@ public class EmpInfo extends BasePageData implements Serializable {
     @Transient
     private String assessRemark;
 
-
-
-    public BigDecimal getEmpScore() {
-        return empScore;
-    }
-
-    public void setEmpScore(BigDecimal empScore) {
-        this.empScore = empScore;
-    }
-
-    public String getAssessRemark() {
-        return assessRemark;
-    }
-
-    public void setAssessRemark(String assessRemark) {
-        this.assessRemark = assessRemark;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
     public String getId() {
         return id;
     }
@@ -79,12 +57,20 @@ public class EmpInfo extends BasePageData implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getEmpId() {
+        return empId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEmpId(String empId) {
+        this.empId = empId;
+    }
+
+    public String getEmpName() {
+        return EmpName;
+    }
+
+    public void setEmpName(String empName) {
+        EmpName = empName;
     }
 
     public String getDeptId() {
@@ -152,9 +138,6 @@ public class EmpInfo extends BasePageData implements Serializable {
     }
 
     public String getDeptName() {
-        if (StringUtils.isEmpty(deptName) && !StringUtils.isEmpty(deptId)) {
-            return CacheUtils.transDept(deptId);
-        }
         return deptName;
     }
 
@@ -162,11 +145,35 @@ public class EmpInfo extends BasePageData implements Serializable {
         this.deptName = deptName;
     }
 
-    public String getpostName() {
+    public String getPostName() {
         return postName;
     }
 
-    public void setpostName(String postName) {
+    public void setPostName(String postName) {
         this.postName = postName;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public BigDecimal getEmpScore() {
+        return empScore;
+    }
+
+    public void setEmpScore(BigDecimal empScore) {
+        this.empScore = empScore;
+    }
+
+    public String getAssessRemark() {
+        return assessRemark;
+    }
+
+    public void setAssessRemark(String assessRemark) {
+        this.assessRemark = assessRemark;
     }
 }

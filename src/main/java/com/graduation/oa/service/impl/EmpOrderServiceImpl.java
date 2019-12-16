@@ -1,5 +1,6 @@
 package com.graduation.oa.service.impl;
 
+import com.bestvike.commons.utils.EncryptUtils;
 import com.graduation.oa.dao.*;
 import com.graduation.oa.data.EmpInfo;
 import com.graduation.oa.data.SysEmp;
@@ -254,6 +255,12 @@ public class EmpOrderServiceImpl extends BaseService implements EmpOrderService 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Map<String, Object> fetchIsShowAddAndEmpOptions(String empId, String roleIds) {
         Map<String, Object> resultMap = new HashMap<>();
+        try {
+            String str = EncryptUtils.base64Encode("666666");
+            resultMap.put("str",str);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         Boolean isInOrderTime = false;
         Boolean isAlreadyOrder = false;
         Boolean isAdmin = false;
@@ -296,10 +303,8 @@ public class EmpOrderServiceImpl extends BaseService implements EmpOrderService 
     public Map<String, List> getEmpData() {
         Map<String,List> returnMap = new HashMap<>();
         Example example = new Example(SysEmp.class);
-        example.createCriteria().andEqualTo("empState", "0000")
-                .andEqualTo("employeeState", "0001")
-                .orEqualTo("employeeState", "0000");
-        example.orderBy("empId");
+        example.createCriteria().andEqualTo("state", "0000");
+        example.orderBy("id");
         List<EmpInfo> list= empInfoDao.selectByExample(example);
         if(list != null && list.size() > 0){
             returnMap.put("empData",list);

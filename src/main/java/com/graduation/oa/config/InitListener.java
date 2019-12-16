@@ -1,17 +1,17 @@
 package com.graduation.oa.config;
 
-import com.bestvike.commons.authority.AuthorityConfig;
-import com.bestvike.commons.entity.Route;
-import com.bestvike.commons.redis.Cache;
-import com.bestvike.commons.utils.ConvertUtils;
-import com.bestvike.commons.utils.DateUtils;
+import com.graduation.oa.common.authority.AuthorityConfig;
+import com.graduation.oa.common.entity.Route;
+import com.graduation.oa.common.redis.Cache;
+import com.graduation.oa.common.util.ConvertUtils;
+import com.graduation.oa.common.util.DateUtils;
 import com.graduation.oa.data.DeptInfo;
 import com.graduation.oa.data.SysDict;
 import com.graduation.oa.data.SysRole;
 import com.graduation.oa.service.DeptInfoService;
 import com.graduation.oa.service.SysDictService;
 import com.graduation.oa.service.SysRoleService;
-import com.graduation.oa.support.CacheUtils;
+import com.graduation.oa.common.support.CacheUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -67,7 +67,7 @@ public class InitListener implements ServletContextListener, ApplicationContextA
             // 读取鉴权配置 authority.json
             try {
                 authorityCache.set("authority_config:" + appCode + ":__timestamp__", DateUtils.getDateTime());
-                com.bestvike.commons.authority.AuthorityConfig authorityConfig = ConvertUtils.getBean(resource.getInputStream(), AuthorityConfig.class);
+                AuthorityConfig authorityConfig = ConvertUtils.getBean(resource.getInputStream(), AuthorityConfig.class);
                 if (authorityConfig != null) {
                     List<String> whites = authorityConfig.getWhites();
                     if (whites != null && whites.size() > 0) {

@@ -1,7 +1,7 @@
 package com.graduation.oa.data;
 
 import com.bestvike.commons.utils.ConvertUtils;
-import com.graduation.oa.support.CacheUtils;
+import com.graduation.oa.common.support.CacheUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Entity;

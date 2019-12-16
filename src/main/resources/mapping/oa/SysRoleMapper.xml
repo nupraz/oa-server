@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.graduation.oa.dao.SysRoleDao">
-	<select id="fetchAll" resultType="SysRole">
+	<select id="fetchAll" resultType="com.graduation.oa.data.SysRole">
 		<![CDATA[
 			select id, name from sys_role where status = '0000'
 		]]>
 	</select>
-	<select id="fetchAllPermissions" resultType="SysRole">
+	<select id="fetchAllPermissions" resultType="com.graduation.oa.data.SysRole">
 		<![CDATA[
 			select id, permissions from sys_role
 		]]>

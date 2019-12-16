@@ -6,7 +6,7 @@ import com.graduation.oa.dao.SysDictDao;
 import com.graduation.oa.data.SysDict;
 import com.graduation.oa.service.BaseService;
 import com.graduation.oa.service.SysDictService;
-import com.graduation.oa.support.CacheUtils;
+import com.graduation.oa.common.support.CacheUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

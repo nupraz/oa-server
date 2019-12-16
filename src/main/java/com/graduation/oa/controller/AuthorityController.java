@@ -1,7 +1,7 @@
 package com.graduation.oa.controller;
 
 import com.bestvike.commons.exception.LoginException;
-import com.bestvike.commons.redis.Cache;
+import com.graduation.oa.common.redis.Cache;
 import com.graduation.oa.data.SysUser;
 import com.graduation.oa.service.AuthorityService;
 import org.apache.commons.lang3.StringUtils;

@@ -1,14 +1,14 @@
 package com.graduation.oa.service.impl;
 
-import com.graduation.oa.exception.ServiceException;
-import com.graduation.oa.util.StringUtils;
+import com.graduation.oa.common.exception.ServiceException;
+import com.graduation.oa.common.util.StringUtils;
 import com.graduation.oa.dao.DeptInfoDao;
 import com.graduation.oa.dao.EmpInfoDao;
 import com.graduation.oa.data.DeptInfo;
 import com.graduation.oa.data.EmpInfo;
 import com.graduation.oa.service.BaseService;
 import com.graduation.oa.service.DeptInfoService;
-import com.graduation.oa.support.CacheUtils;
+import com.graduation.oa.common.support.CacheUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -57,7 +57,7 @@ public class DeptInfoServiceImpl extends BaseService implements DeptInfoService 
                     exampleEmp.createCriteria().andEqualTo("id", deptInfo.getLeader());
                     EmpInfo empInfo = empInfoDao.selectOneByExample(exampleEmp);
                     if(null!=empInfo){
-                        deptInfo.setLeader(empInfo.getName());
+                        deptInfo.setLeader(empInfo.getEmpName());
                     }
                 }
                 if (StringUtils.isEmpty(deptInfo.getParent())) {

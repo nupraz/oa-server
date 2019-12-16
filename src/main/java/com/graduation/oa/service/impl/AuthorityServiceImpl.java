@@ -1,15 +1,15 @@
 package com.graduation.oa.service.impl;
 
-import com.bestvike.commons.entity.Route;
-import com.bestvike.commons.entity.User;
-import com.bestvike.commons.exception.CredentialsException;
-import com.bestvike.commons.exception.ServiceException;
-import com.bestvike.commons.redis.Cache;
-import com.bestvike.commons.utils.EncryptUtils;
+import com.graduation.oa.common.entity.Route;
+import com.graduation.oa.common.entity.User;
+import com.graduation.oa.common.exception.CredentialsException;
+import com.graduation.oa.common.exception.ServiceException;
+import com.graduation.oa.common.redis.Cache;
 import com.graduation.oa.dao.SysUserDao;
 import com.graduation.oa.data.SysUser;
 import com.graduation.oa.service.AuthorityService;
 import com.graduation.oa.service.BaseService;
+import com.graduation.oa.common.util.EncryptUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +79,7 @@ public class AuthorityServiceImpl extends BaseService implements AuthorityServic
             throw new CredentialsException("用户不存在！");
         }
         // 通过用户名、密码登录
-        if (sysUser == null || !new BCryptPasswordEncoder().matches(EncryptUtils.base64Decode(password), sysUser.getPassword())) {
+        if (sysUser == null || !new BCryptPasswordEncoder().matches(EncryptUtil.base64Decode(password), sysUser.getPassword())) {
             throw new CredentialsException("用户名或密码错");
         }
 
@@ -185,10 +185,10 @@ public class AuthorityServiceImpl extends BaseService implements AuthorityServic
             throw new ServiceException("新密码不能为空");
         }
         SysUser sysUserDb = sysUserDao.selectByPrimaryKey(sysUser.getId());
-        if (sysUserDb == null || !new BCryptPasswordEncoder().matches(EncryptUtils.base64Decode(sysUser.getPassword()), sysUserDb.getPassword())) {
+        if (sysUserDb == null || !new BCryptPasswordEncoder().matches(EncryptUtil.base64Decode(sysUser.getPassword()), sysUserDb.getPassword())) {
             throw new ServiceException("用户名或密码错");
         }
-        sysUser.setPassword(new com.bestvike.commons.crypto.bcrypt.BCryptPasswordEncoder().encode(EncryptUtils.base64Decode(sysUser.getNewPassword())));
+        sysUser.setPassword(new com.graduation.oa.common.crypto.bcrypt.BCryptPasswordEncoder().encode(EncryptUtil.base64Decode(sysUser.getNewPassword())));
         sysUser.setNewPassword(null);
         sysUserDao.updateByPrimaryKeySelective(sysUser);
     }

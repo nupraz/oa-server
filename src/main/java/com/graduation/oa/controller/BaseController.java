@@ -1,13 +1,13 @@
 package com.graduation.oa.controller;
 
-import com.bestvike.commons.entity.User;
-import com.bestvike.commons.exception.AuthorityException;
-import com.bestvike.commons.exception.CredentialsException;
-import com.bestvike.commons.exception.LoginException;
-import com.bestvike.commons.exception.ServiceException;
-import com.bestvike.commons.redis.Cache;
-import com.bestvike.commons.support.RestError;
-import com.bestvike.commons.support.RestStatus;
+import com.graduation.oa.common.entity.User;
+import com.graduation.oa.common.exception.AuthorityException;
+import com.graduation.oa.common.exception.CredentialsException;
+import com.graduation.oa.common.exception.LoginException;
+import com.graduation.oa.common.exception.ServiceException;
+import com.graduation.oa.common.redis.Cache;
+import com.graduation.oa.common.support.RestError;
+import com.graduation.oa.common.support.RestStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

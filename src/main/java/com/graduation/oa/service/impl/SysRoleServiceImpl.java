@@ -1,7 +1,7 @@
 package com.graduation.oa.service.impl;
 
 import com.bestvike.commons.exception.ServiceException;
-import com.bestvike.commons.redis.Cache;
+import com.graduation.oa.common.redis.Cache;
 import com.bestvike.commons.utils.ConvertUtils;
 import com.graduation.oa.dao.SysRoleDao;
 import com.graduation.oa.dao.SysUserDao;

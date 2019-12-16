@@ -1,9 +1,9 @@
 package com.graduation.oa.service.impl;
 
-import com.bestvike.commons.crypto.bcrypt.BCryptPasswordEncoder;
-import com.graduation.oa.exception.ServiceException;
-import com.bestvike.commons.utils.EncryptUtils;
-import com.graduation.oa.util.StringUtils;
+import com.graduation.oa.common.crypto.bcrypt.BCryptPasswordEncoder;
+import com.graduation.oa.common.exception.ServiceException;
+import com.graduation.oa.common.util.EncryptUtil;
+import com.graduation.oa.common.util.StringUtils;
 import com.graduation.oa.dao.DeptInfoDao;
 import com.graduation.oa.dao.SysRoleDao;
 import com.graduation.oa.dao.SysUserDao;
@@ -108,7 +108,7 @@ public class SysUserServiceImpl extends BaseService implements SysUserService {
             sysUser.setId(StringUtils.guid());
         }
         if (StringUtils.isEmpty(sysUser.getPassword())) {
-            sysUser.setPassword(new BCryptPasswordEncoder().encode(EncryptUtils.MD5Encode(defaultPassword)));
+            sysUser.setPassword(new BCryptPasswordEncoder().encode(EncryptUtil.MD5Encode(defaultPassword)));
         }
         if (StringUtils.isEmpty(sysUser.getStatus())) {
             sysUser.setStatus("0000");
@@ -158,7 +158,7 @@ public class SysUserServiceImpl extends BaseService implements SysUserService {
     @Override
     public int resetPass(String id) {
         try {
-            String password = new BCryptPasswordEncoder().encode(EncryptUtils.MD5Encode(defaultPassword));
+            String password = new BCryptPasswordEncoder().encode(EncryptUtil.MD5Encode(defaultPassword));
             return sysUserDao.resetPassword(id, password);
         } catch (NoSuchAlgorithmException e) {
             throw new ServiceException("密码加密异常");
