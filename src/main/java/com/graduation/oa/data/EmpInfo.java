@@ -26,9 +26,28 @@ public class EmpInfo extends BasePageData implements Serializable {
     private String postCode;
     private String status;
     private String needScore;
+    /*
+
+
+    有空再改
+
+
+    private String email;
+    private String qq;
+    private String address;
+    private String empState;//0000:已开户状态 1111：新增未开户  9999：销户状态
+    private Integer age;
+    private String sex;
+    private String educational;
+    private String bankAccount;
+    private String idCard;
+
+
+    */
     private Date manageTime;
     private String manageUser;
     private String remark;
+
 
     @Transient
     private String deptName;

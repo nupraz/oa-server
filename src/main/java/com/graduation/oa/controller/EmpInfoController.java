@@ -39,12 +39,6 @@ public class EmpInfoController extends BaseController {
         return empInfoService.fetchEmpNotInUser(empInfo.getDeptId());
     }
 
-    @GetMapping("/api/deptEmployees")
-    @LogPub("员工评价页面查询")
-    public List<EmpInfo> fetchDeptEmp(EmpInfo empInfo) {
-        return empInfoService.fetchDeptEmp(empInfo,this.getLoginUser().getCode());
-    }
-
     @GetMapping("/api/employees")
     @LogPub("员工管理页面查询")
     public List<EmpInfo> fetch(EmpInfo empInfo) {

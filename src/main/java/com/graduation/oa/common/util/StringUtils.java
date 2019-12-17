@@ -12,7 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public final class StringUtils {
-    private static Log logger = LogFactory.getLog(com.bestvike.commons.utils.StringUtils.class);
+    private static Log logger = LogFactory.getLog(StringUtils.class);
     static SnowFlake snowFlake = new SnowFlake(0L, 0L);
 
     public StringUtils() {

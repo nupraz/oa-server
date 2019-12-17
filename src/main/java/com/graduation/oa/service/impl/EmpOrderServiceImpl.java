@@ -1,9 +1,8 @@
 package com.graduation.oa.service.impl;
 
-import com.bestvike.commons.utils.EncryptUtils;
+import com.graduation.oa.common.util.EncryptUtil;
 import com.graduation.oa.dao.*;
 import com.graduation.oa.data.EmpInfo;
-import com.graduation.oa.data.SysEmp;
 import com.graduation.oa.data.empOrderEntity.EmpOrderInfo;
 import com.graduation.oa.data.empOrderEntity.RestMenuInfo;
 import com.graduation.oa.data.empOrderEntity.RestaurantInfo;
@@ -255,12 +254,12 @@ public class EmpOrderServiceImpl extends BaseService implements EmpOrderService 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Map<String, Object> fetchIsShowAddAndEmpOptions(String empId, String roleIds) {
         Map<String, Object> resultMap = new HashMap<>();
-        try {
+        /*try {
             String str = EncryptUtils.base64Encode("666666");
             resultMap.put("str",str);
         } catch (Exception e){
             e.printStackTrace();
-        }
+        }*/
         Boolean isInOrderTime = false;
         Boolean isAlreadyOrder = false;
         Boolean isAdmin = false;
@@ -302,8 +301,8 @@ public class EmpOrderServiceImpl extends BaseService implements EmpOrderService 
     @Override
     public Map<String, List> getEmpData() {
         Map<String,List> returnMap = new HashMap<>();
-        Example example = new Example(SysEmp.class);
-        example.createCriteria().andEqualTo("state", "0000");
+        Example example = new Example(EmpInfo.class);
+        example.createCriteria().andEqualTo("status", "0000");
         example.orderBy("id");
         List<EmpInfo> list= empInfoDao.selectByExample(example);
         if(list != null && list.size() > 0){

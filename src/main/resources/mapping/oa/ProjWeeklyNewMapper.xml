@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.graduation.oa.dao.ProjWeeklyNewDao">
+    <select id="getProjWeeklyNewInfo" parameterType="java.lang.String" resultType="com.graduation.oa.data.projEntity.ProjWeeklyNew">
+        <![CDATA[
+          select * from proj_weekly pw
+        ]]>
+        <where>
+            pw.pw_state = '0000'
+            <if test="fuzzy!=null and fuzzy !=''">
+                AND (
+                pw.proj_id LIKE concat(concat('%',#{fuzzy}),'%')
+                OR pw.proj_name like concat(concat('%',#{fuzzy}),'%')
+                OR pw.proj_manage like concat(concat('%',#{fuzzy}),'%')
+                OR pw.emp_name like concat(concat('%',#{fuzzy}),'%')
+                OR pw.start_date like concat(concat('%',#{fuzzy}),'%')
+                OR pw.end_date like concat(concat('%',#{fuzzy}),'%')
+                )
+            </if>
+            <if test="fuzzy == null or fuzzy ==''">
+                <if test="projName != null and projName !=''">
+                    AND pw.proj_name like concat(concat('%',#{projName}),'%')
+                </if>
+                <if test="projManage != null and projManage !=''">
+                    AND pw.proj_manage = #{projManage}
+                </if>
+                <if test="empName != null and empName != ''">
+                    AND pw.emp_name = #{empName}
+                </if>
+                <if test="dateWeek != null and dateWeek != ''">
+                    and pw.start_date = DATE_FORMAT(#{dateWeek}, '%Y-%m-%d')
+                </if>
+            </if>
+            <if test="projId != null and projId !=''">
+                AND pw.proj_id = #{projId}
+            </if>
+        </where>
+        <if test="(column == null || column == '') and (sort == null || sort == '')">
+            ORDER BY pw.start_date DESC
+        </if>
+        <if test="column != null and column != ''">
+            ORDER BY
+            <if test="column == 'projId'">pw.proj_id</if>
+            <if test="column == 'projName' ">pw.proj_name</if>
+            <if test="column == 'projManage' ">pw.proj_manage</if>
+            <if test="column == 'empName' ">pw.emp_name</if>
+            <if test="column == 'startDate' ">pw.start_date</if>
+            <if test="column == 'endDate' ">pw.end_date</if>
+            <if test="column == 'manageTime' ">pw.manage_time</if>
+        </if>
+        <if test="sort == 'ascending' and column != ''">
+            ASC
+        </if>
+        <if test="sort == 'descending' and column != ''">
+            DESC
+        </if>
+    </select>
+    <!--<select id="fetchProjInfo" parameterType="java.lang.String" resultType="com.graduation.oa.data.projEntity.ProjInfo">
+        select proj_name as projName,proj_id as projId,'0001' as travelType  from proj_info a
+        where a.proj_state != '0005' and
+        <if test="type == 'id'">a.proj_id= #{projName}</if>
+        <if test="type == 'name'">a.proj_name = #{projName}</if>
+        union all
+        select proj_name as projName,b.presale_proj_id as projId,'0002' as travelType  from presale_proj_info b
+        where state != '9999' and
+        <if test="type == 'id'">b.presale_proj_id = #{projName}</if>
+        <if test="type == 'name'">b.proj_name = #{projName}</if>
+        union all
+        select c.presale_support_name as projName,c.presale_support_id as projId,'0003' as travelType  from presale_support_info c
+        where state != '9999' and
+        <if test="type == 'id'">c.presale_support_id = #{projName}</if>
+        <if test="type == 'name'">c.presale_support_name = #{projName}</if>
+        union all
+        select sale_name as projName,sale_id as projId,'0004' as travelTypefrom from sale_info d
+        where d.sale_state != '9999' and
+        <if test="type == 'id'">d.sale_id = #{projName}</if>
+        <if test="type == 'name'">d.sale_name = #{projName}</if>
+    </select>-->
+</mapper>

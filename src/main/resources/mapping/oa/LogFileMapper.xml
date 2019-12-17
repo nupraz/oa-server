@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.graduation.oa.dao.LogFileDao">
+    <select id="selectInfoByMd5" parameterType="com.graduation.oa.data.LogFile" resultType="com.graduation.oa.data.LogFile">
+        select * from log_file where file_md5 = #{fileMd5} limit 0,1
+    </select>
+    <select id="selectInfo" parameterType="string" resultType="com.graduation.oa.data.LogFile">
+        select * from log_file where file_id = #{fileId}
+    </select>
+    <update id="updateInfo" parameterType="com.graduation.oa.data.LogFile">
+        update log_file
+        set
+        file_state = #{fileState},
+        manage_time = #{manageTime},
+        manage_user = #{manageUser},
+        remark = #{remark}
+        where file_id = #{fileId}
+    </update>
+</mapper>
