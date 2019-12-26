@@ -1,4 +1,4 @@
-group 'com.bestvike'
+group 'com.graduation'
 version '1.0.0'
 
 apply plugin: 'java'

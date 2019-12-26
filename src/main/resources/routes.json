@@ -1,5 +1,56 @@
 [
-
+  {
+    "path": "/mine",
+    "alwaysShow": true,
+    "component": "Layout",
+    "meta": {
+      "title": "我的任务",
+      "icon": "mine"
+    },
+    "children": [
+      {
+        "path": "empOrderManage",
+        "component": "mine/empOrderManage",
+        "name": "EmpOrderManage",
+        "meta": {
+          "title": "员工订餐",
+          "noCache":"true"
+        },
+        "authority": {
+          "operates": [
+            {
+              "name": "add",
+              "label": "新增",
+              "urls": [
+                "POST:/api/empOrderInfo"
+              ]
+            },
+            {
+              "name": "modify",
+              "label": "修改",
+              "urls": [
+                "PUT:/api/empOrderInfo"
+              ]
+            },
+            {
+              "name": "remove",
+              "label": "删除",
+              "urls": [
+                "DELETE:/api/empOrderInfo"
+              ]
+            },
+            {
+              "name": "export",
+              "label": "导出数据",
+              "urls": [
+                "POST:/api/empOrderInfo/exportOrdersExcel"
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
   {
     "path":"/manage",
     "alwaysShow":true,
@@ -88,6 +139,39 @@
         "name":"ListEmployee",
         "meta":{
           "title":"人员管理"
+        }
+      },
+      {
+        "path":"dict",
+        "component":"manage/dict",
+        "name":"ListDict",
+        "meta":{
+          "title":"字典管理"
+        },
+        "authority": {
+          "operates":[
+            {
+              "name":"create",
+              "label":"新增字典项",
+              "urls":[
+                "POST:/api/dicts"
+              ]
+            },
+            {
+              "name":"save",
+              "label":"保存字典项",
+              "urls":[
+                "put:/api/dicts"
+              ]
+            },
+            {
+              "name":"remove",
+              "label":"删除字典项",
+              "urls":[
+                "DELETE:/api/dicts/{codes}"
+              ]
+            }
+          ]
         }
       }
     ]
@@ -220,21 +304,20 @@
     ]
   },
   {
-    "path": "/mine",
+    "path": "/incomeExpenditure",
     "alwaysShow": true,
     "component": "Layout",
     "meta": {
-      "title": "我的任务",
+      "title": "收支管理",
       "icon": "mine"
     },
     "children": [
       {
-        "path": "empOrderManage",
-        "component": "mine/empOrderManage",
-        "name": "EmpOrderManage",
+        "path": "invoiceManage",
+        "component": "incomeExpenditure/InvoiceManage",
+        "name": "InvoiceManage",
         "meta": {
-          "title": "员工订餐",
-          "noCache":"true"
+          "title": "发票管理"
         },
         "authority": {
           "operates": [
@@ -242,28 +325,108 @@
               "name": "add",
               "label": "新增",
               "urls": [
-                "POST:/api/empOrderInfo"
+                "POST:/api/invoiceAdd"
               ]
             },
             {
               "name": "modify",
               "label": "修改",
               "urls": [
-                "PUT:/api/empOrderInfo"
+                "PUT:/api/invoiceEdit"
               ]
             },
             {
               "name": "remove",
               "label": "删除",
               "urls": [
-                "DELETE:/api/empOrderInfo"
+                "DELETE:/api/invoiceEdit"
+              ]
+            },
+            {
+              "name": "import",
+              "label": "导入数据",
+              "urls": [
+                "POST:/api/invoice/imports"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": "reimbursementManage",
+        "component": "incomeExpenditure/reimbursementManage",
+        "name": "reimbursementManage",
+        "meta": {
+          "title": "报销管理"
+        },
+        "authority": {
+          "operates": [
+            {
+              "name": "subsidyPreserve",
+              "label": "岗级补助金额管理",
+              "urls": [
+                ""
+              ]
+            },
+            {
+              "name": "add",
+              "label": "新增",
+              "urls": [
+                "POST:/api/reimbInfo"
+              ]
+            },
+            {
+              "name": "reimb",
+              "label": "报销",
+              "urls": [
+                "PUT:/api/reimbInfo/start"
+              ]
+            },
+            {
+              "name": "quarter",
+              "label": "季度结算",
+              "urls": [
+                "PUT:/api/reimbInfo/quarter"
+              ]
+            },
+            {
+              "name": "remove",
+              "label": "撤销",
+              "urls": [
+                "DELETE:/api/reimbInfo"
               ]
             },
             {
               "name": "export",
               "label": "导出数据",
               "urls": [
-                "POST:/api/empOrderInfo/exportOrdersExcel"
+                "POST:/api/reimbInfo/exportReimbExcel"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "path": "accountFlowRecord",
+        "component": "incomeExpenditure/accountFlowRecord",
+        "name": "accountFlowRecord",
+        "meta": {
+          "title": "网银流水记录"
+        },
+        "authority": {
+          "operates": [
+            {
+              "name": "remove",
+              "label": "remove",
+              "urls": [
+                "DELETE:/api/api/accountFlowInfo"
+              ]
+            },
+            {
+              "name": "import",
+              "label": "导入数据",
+              "urls": [
+                "POST:/api/accountFlowInfo/import"
               ]
             }
           ]

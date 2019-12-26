@@ -56,6 +56,7 @@ public class ProjWeeklyNewController extends BaseController {
 			@RequestParam(value = "limit", required = false) int limit) {
 		return projWeeklyNewService.selectProWeekly(fuzzy, projId, projName, projManage, empName, dateWeek, sort, page, limit);
 	}
+
 	/**
 	 * 项目周报导入
 	 *
@@ -118,6 +119,7 @@ public class ProjWeeklyNewController extends BaseController {
 		logger.info("周报编号打印："+id);
 		return projWeeklyNewService.deleteProjWeeklyNew(id);
 	}
+
 	/**
 	 *项目周报导出功能
 	 * @param param
